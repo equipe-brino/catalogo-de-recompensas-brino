@@ -205,7 +205,11 @@ app.post('/api/catalogo', async (req, res) => {
     res.json({ success: true, slug: finalSlug, url: `/catalogo/${finalSlug}/`, html });
   } catch (err) {
     console.error('Error creating catalog:', err);
-    res.status(500).json({ error: 'Erro ao salvar catálogo' });
+    const isReadOnly = err && (err.code === 'EROFS' || err.code === 'EACCES');
+    const msg = (isReadOnly || (process.env.VERCEL && store.backend === 'file'))
+      ? 'Erro ao salvar catálogo: armazenamento não configurado. Configure o Vercel KV no projeto.'
+      : 'Erro ao salvar catálogo';
+    res.status(500).json({ error: msg });
   }
 });
 

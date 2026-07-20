@@ -16,17 +16,60 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-const USE_KV = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
+const ON_VERCEL = !!process.env.VERCEL;
+
+// Em desenvolvimento local, carrega variáveis de um .env.local (fora do git).
+// Na Vercel, as variáveis já são injetadas pela integração — dotenv é ignorado.
+if (!ON_VERCEL) {
+  try {
+    require('dotenv').config({ path: path.join(__dirname, '..', '.env.local') });
+    require('dotenv').config();
+  } catch (_) { /* dotenv é opcional */ }
+}
+
+/**
+ * Descobre as credenciais REST do KV/Upstash aceitando:
+ *  - nomes padrão: KV_REST_API_URL / KV_REST_API_TOKEN
+ *  - nomes Upstash: UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN
+ *  - qualquer PREFIXO customizado da Vercel, ex.:
+ *      meuprefixo_KV_REST_API_URL / meuprefixo_KV_REST_API_TOKEN
+ * Assim funciona independentemente do prefixo escolhido no painel.
+ */
+function findKvCreds() {
+  const e = process.env;
+  if (e.KV_REST_API_URL && e.KV_REST_API_TOKEN) {
+    return { url: e.KV_REST_API_URL, token: e.KV_REST_API_TOKEN };
+  }
+  if (e.UPSTASH_REDIS_REST_URL && e.UPSTASH_REDIS_REST_TOKEN) {
+    return { url: e.UPSTASH_REDIS_REST_URL, token: e.UPSTASH_REDIS_REST_TOKEN };
+  }
+  // Procura pares com prefixo customizado
+  for (const suffix of ['_KV_REST_API_URL', '_UPSTASH_REDIS_REST_URL']) {
+    const urlKey = Object.keys(e).find(k => k.endsWith(suffix) && e[k]);
+    if (urlKey) {
+      const prefix = urlKey.slice(0, urlKey.length - suffix.length);
+      const tokenSuffix = suffix.replace('_URL', '_TOKEN');
+      const tokenKey = prefix + tokenSuffix;
+      if (e[tokenKey]) return { url: e[urlKey], token: e[tokenKey] };
+    }
+  }
+  return null;
+}
 
 let kv = null;
-if (USE_KV) {
+const creds = findKvCreds();
+if (creds) {
   try {
-    kv = require('@vercel/kv').kv;
-    console.log('[store] Usando Vercel KV para persistência.');
+    const { createClient } = require('@vercel/kv');
+    kv = createClient({ url: creds.url, token: creds.token });
+    console.log('[store] Usando Vercel KV/Upstash para persistência.');
   } catch (err) {
     console.error('[store] KV configurado mas @vercel/kv indisponível:', err.message);
     kv = null;
   }
+} else if (ON_VERCEL) {
+  console.error('[store] ATENÇÃO: rodando na Vercel SEM KV detectado. ' +
+    'Conecte o banco Redis (Upstash) ao projeto e faça redeploy.');
 }
 
 /* ------------------------------------------------------------------ */

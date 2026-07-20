@@ -772,9 +772,15 @@ async function openOutput() {
             liveLink.href = livePageUrl;
             liveLink.textContent = absoluteUrl;
         }
-        // Load dynamic HTML source for downloading standalone file
-        const pageRes = await fetch(livePageUrl);
-        currentHTML = await pageRes.text();
+        // HTML para download: usa o que o POST já retornou (independente de rede).
+        // Fallback: busca a página ao vivo, caso o servidor não tenha enviado o HTML.
+        if (result.html) {
+            currentHTML = result.html;
+        }
+        else {
+            const pageRes = await fetch(livePageUrl);
+            currentHTML = await pageRes.text();
+        }
         const isPdf = config.fmt === "pdf";
         if (btnExport)
             btnExport.innerHTML = isPdf ? "📄 Salvar como PDF" : "🌐 Baixar site (HTML)";
