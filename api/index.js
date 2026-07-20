@@ -164,6 +164,7 @@ app.post('/api/catalogo', (req, res) => {
 
     if (Array.isArray(config.items)) {
       config.items = config.items.map((item, index) => {
+        item.link = item.link ? String(item.link).trim() : undefined;
         if (item.img && item.img.startsWith('data:')) {
           item.img = saveBase64File(item.img, `img-prize-${index}`);
         }

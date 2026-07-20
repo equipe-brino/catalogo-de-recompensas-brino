@@ -174,6 +174,7 @@ app.post('/api/catalogo', (req, res) => {
     // Process prizes inside catalog to extract base64 files/images
     if (Array.isArray(config.items)) {
       config.items = config.items.map((item, index) => {
+        item.link = item.link ? String(item.link).trim() : undefined;
         // Extract base64 image if present
         if (item.img && item.img.startsWith('data:')) {
           item.img = saveBase64File(item.img, `img-prize-${index}`);

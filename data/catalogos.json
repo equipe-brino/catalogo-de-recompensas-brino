@@ -306,5 +306,68 @@
     "skills": {},
     "objetivo": "",
     "updatedAt": "2026-07-20T19:27:19.933Z"
+  },
+  "teste-link": {
+    "teacher": "Prof Teste",
+    "klass": "5A",
+    "school": "Escola X",
+    "title": "Catálogo Teste",
+    "mode": "loja",
+    "fmt": "site",
+    "showPts": true,
+    "items": [
+      {
+        "id": "p1",
+        "name": "Prêmio Link",
+        "desc": "Teste",
+        "pts": 10,
+        "qty": "ind",
+        "emo": "🎁",
+        "link": "https://example.com"
+      }
+    ],
+    "skills": {},
+    "objetivo": "",
+    "slug": "teste-link",
+    "updatedAt": "2026-07-20T19:36:13.934Z"
+  },
+  "teste3": {
+    "mode": "loja",
+    "fmt": "site",
+    "showPts": true,
+    "title": "efaf sérgio",
+    "teacher": "Sérgo",
+    "klass": "19",
+    "school": "teste1",
+    "slug": "teste3",
+    "items": [
+      {
+        "id": "ei1",
+        "seg": "EI",
+        "emo": "🧩",
+        "name": "Quebra-cabeça de encaixe",
+        "desc": "Peças grandes de encaixar, fáceis de manusear.",
+        "pts": 20
+      },
+      {
+        "id": "ei2",
+        "seg": "EI",
+        "emo": "🐞",
+        "name": "Animais de montar",
+        "desc": "Bichinhos 3D que se montam por encaixe.",
+        "pts": 25
+      },
+      {
+        "id": "ei3",
+        "seg": "EI",
+        "emo": "🏅",
+        "name": "Medalha de campeão",
+        "desc": "Medalha impressa em 3D com fita.",
+        "pts": 30
+      }
+    ],
+    "skills": {},
+    "objetivo": "",
+    "updatedAt": "2026-07-20T19:39:39.856Z"
   }
 }
