@@ -1,1 +1,16 @@
-{}
+{
+  "prof-ana-escola-teste": {
+    "title": "Catálogo teste",
+    "teacher": "Prof. Ana",
+    "klass": "5A",
+    "school": "Escola Teste",
+    "mode": "loja",
+    "fmt": "site",
+    "showPts": true,
+    "items": [],
+    "skills": {},
+    "objetivo": "",
+    "slug": "prof-ana-escola-teste",
+    "updatedAt": "2026-07-20T17:41:54.776Z"
+  }
+}
