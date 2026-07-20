@@ -267,5 +267,44 @@
     "skills": {},
     "objetivo": "",
     "updatedAt": "2026-07-20T19:07:33.792Z"
+  },
+  "sergio2": {
+    "mode": "loja",
+    "fmt": "site",
+    "showPts": true,
+    "title": "sergios",
+    "teacher": "Sérgio",
+    "klass": "6° efaf",
+    "school": "Marista",
+    "slug": "sergio2",
+    "items": [
+      {
+        "id": "ei2",
+        "seg": "EI",
+        "emo": "🐞",
+        "name": "Animais de montar",
+        "desc": "Bichinhos 3D que se montam por encaixe.",
+        "pts": 25
+      },
+      {
+        "id": "ei3",
+        "seg": "EI",
+        "emo": "🏅",
+        "name": "Medalha de campeão",
+        "desc": "Medalha impressa em 3D com fita.",
+        "pts": 30
+      },
+      {
+        "id": "ei6",
+        "seg": "EI",
+        "emo": "🦕",
+        "name": "Dinossauro articulado",
+        "desc": "Dino que mexe o rabo e a cabeça.",
+        "pts": 40
+      }
+    ],
+    "skills": {},
+    "objetivo": "",
+    "updatedAt": "2026-07-20T19:27:19.933Z"
   }
 }

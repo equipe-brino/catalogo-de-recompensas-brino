@@ -1,6 +1,7 @@
 const serverless = require('serverless-http');
 const express = require('express');
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const crypto = require('crypto');
 
@@ -11,9 +12,27 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-const TMP_DIR = process.env.TMPDIR || '/tmp';
-const DATA_DIR = path.join(TMP_DIR, 'brino-data');
-const UPLOAD_DIR = path.join(TMP_DIR, 'brino-uploads');
+const TMP_DIR = process.env.TMPDIR || process.env.TEMP || process.env.TMP || os.tmpdir();
+const ROOT_DATA_DIR = path.join(__dirname, '..', 'data');
+const ROOT_UPLOAD_DIR = path.join(__dirname, '..', 'public', 'uploads');
+const DATA_DIR = (() => {
+  try {
+    fs.mkdirSync(ROOT_DATA_DIR, { recursive: true });
+    return ROOT_DATA_DIR;
+  } catch (err) {
+    console.warn('Persistência de dados local indisponível, usando /tmp:', err.message);
+    return path.join(TMP_DIR, 'brino-data');
+  }
+})();
+const UPLOAD_DIR = (() => {
+  try {
+    fs.mkdirSync(ROOT_UPLOAD_DIR, { recursive: true });
+    return ROOT_UPLOAD_DIR;
+  } catch (err) {
+    console.warn('Upload local indisponível, usando /tmp:', err.message);
+    return path.join(TMP_DIR, 'brino-uploads');
+  }
+})();
 const CATALOGS_FILE = path.join(DATA_DIR, 'catalogos.json');
 const ORDERS_FILE = path.join(DATA_DIR, 'pedidos.json');
 
@@ -140,7 +159,7 @@ app.post('/api/catalogo', (req, res) => {
       return res.status(400).json({ error: 'Campos obrigatórios ausentes (professor, turma, escola)' });
     }
 
-    let requestedSlug = slugify(config.slug || `${config.teacher}-${config.school}`);
+    let requestedSlug = slugify(config.slug || `${config.teacher}-${config.klass}-${config.school}`);
     if (!requestedSlug) requestedSlug = 'catalogo';
 
     if (Array.isArray(config.items)) {

@@ -166,7 +166,7 @@ app.post('/api/catalogo', (req, res) => {
     }
 
     // Determine slug
-    let requestedSlug = slugify(config.slug || `${config.teacher}-${config.school}`);
+    let requestedSlug = slugify(config.slug || `${config.teacher}-${config.klass}-${config.school}`);
     if (!requestedSlug) {
       requestedSlug = 'catalogo';
     }
