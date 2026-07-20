@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerador de Catálogo de Recompensas · Br.ino</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@500;700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-in">
+      <img id="brandLogo" alt="Br.ino">
+      <span class="sep"></span>
+      <span class="ttl">Recompensas Br.ino</span>
+      <nav class="nav">
+        <button class="navbtn on" data-view="gen">🎁 Gerador de catálogo</button>
+        <button class="navbtn" data-view="guide">📊 Guia de pontuação</button>
+        <button class="navbtn" data-view="orders" id="btnNavOrders" style="display:none;">📥 Pedidos recebidos</button>
+      </nav>
+    </div>
+  </div>
+
+  <div id="viewGen">
+    <div class="intro">
+      <div class="intro-in">
+        <span class="ic">👋</span>
+        <div>
+          <h2>Monte o seu jeito de recompensar</h2>
+          <p>Esta é a ferramenta para você, professor(a), <b>personalizar como as recompensas vão funcionar na sua turma</b> junto com os pontos do ClassDojo. Em 3 passos: escolha o <b>modo de premiação</b>, marque na biblioteca os prêmios que quer liberar (você limita as opções para os alunos) e clique em <b>Gerar</b> — seu catálogo ficará salvo e com um link exclusivo e compartilhável. Passe o mouse nos <b>?</b> para entender cada opção.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="layout">
+      <!-- CONFIG PANEL -->
+      <aside class="panel">
+        <div class="sec">
+          <p class="step-lbl">1 · Modo de premiação <button class="help-ic" data-help="modo">?</button></p>
+          <div class="modes" id="modes">
+            <label class="mode on">
+              <input type="radio" name="mode" value="loja" checked>
+              <span class="emo">🎁</span>
+              <div>
+                <b>Catálogo por pontos</b>
+                <span>Os alunos usam os pontos do ClassDojo para escolher os prêmios que você liberou.</span>
+              </div>
+            </label>
+            <label class="mode">
+              <input type="radio" name="mode" value="podio">
+              <span class="emo">🏆</span>
+              <div>
+                <b>Pódio 1º · 2º · 3º</b>
+                <span>Premia os melhores da turma. Os 3 primeiros selecionados viram 1º, 2º e 3º.</span>
+              </div>
+            </label>
+            <label class="mode">
+              <input type="radio" name="mode" value="trilha">
+              <span class="emo">🧭</span>
+              <div>
+                <b>Trilha de habilidades</b>
+                <span>Cada habilidade desenvolvida desbloqueia um prêmio diferente.</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="sec">
+          <p class="step-lbl">2 · Opções</p>
+          <div class="opt-row">
+            <label class="k" for="showPts">Mostrar os pontos <button class="help-ic" data-help="pontos">?</button></label>
+            <label class="switch"><input type="checkbox" id="showPts" checked><span class="slider"></span></label>
+          </div>
+          <div class="opt-row" style="flex-direction:column;align-items:stretch;gap:6px;">
+            <label class="k">Formato de saída <button class="help-ic" data-help="formato">?</button></label>
+            <div class="seg-radio" id="fmt">
+              <label><input type="radio" name="fmt" value="site" checked><span>🌐 Site</span></label>
+              <label><input type="radio" name="fmt" value="pdf"><span>📄 PDF</span></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="sec">
+          <p class="step-lbl">3 · Identificação <button class="help-ic" data-help="ident">?</button></p>
+          <div class="fld"><label>Título do catálogo</label><input id="fTitle" placeholder="Catálogo de Recompensas"></div>
+          <div class="fld"><label>Professor(a) <span class="req">*</span></label><input id="fTeacher" placeholder="Ex.: Prof. Sabrina"></div>
+          <div class="fld"><label>Turma / Segmento <span class="req">*</span></label><input id="fClass" placeholder="Ex.: 5º ano A · EFAI"></div>
+          <div class="fld"><label>Escola <span class="req">*</span></label><input id="fSchool" placeholder="Ex.: Colégio Marista"></div>
+          
+          <!-- Custom slug selection -->
+          <div class="fld">
+            <label>Link Personalizado (opcional)</label>
+            <div style="display:flex; align-items:center;">
+              <span style="font-size:12px; color:var(--muted); margin-right:4px;">/catalogo/</span>
+              <input id="fSlug" placeholder="Ex.: sabrina-5a" style="flex:1;">
+            </div>
+            <small style="font-size:11px; color:var(--muted);">Deixe em branco para gerar automaticamente.</small>
+          </div>
+          
+          <p class="req-note">* Obrigatórios no modo <b>Site</b> (garantem que cada pedido chegue identificado). No <b>PDF</b> são opcionais.</p>
+          <p class="req-msg" id="identMsg">Preencha professor, turma e escola para gerar o catálogo.</p>
+        </div>
+
+        <div class="sec gen-sec">
+          <div class="selcount" id="selCount">Nenhum prêmio selecionado</div>
+          <button class="btn-gen" id="btnGen" disabled>✨ Gerar catálogo</button>
+        </div>
+      </aside>
+
+      <!-- LIBRARY -->
+      <main>
+        <div class="lib-head">
+          <h2>Biblioteca de prêmios</h2>
+          <button class="add-btn" id="btnAdd">➕ Adicionar prêmio</button>
+          <button class="add-btn" id="btnReset" title="Restaurar biblioteca padrão" style="border-color:var(--line);background:#fff;color:var(--muted)">↺ Restaurar padrão</button>
+          <div class="tabs" id="tabs"></div>
+          <select id="qtySelect" title="Filtrar por quantidade de alunos">
+            <option value="ALL">Todas as quantidades</option>
+            <option value="ind">🧍 Individual</option>
+            <option value="dupla">🧑‍🤝‍🧑 Dupla</option>
+            <option value="grupo">👨‍👩‍👧 Grupo</option>
+            <option value="sala">🏫 Sala inteira</option>
+          </select>
+        </div>
+        <div id="trilhaPanel" class="trilha-panel" style="display:none"></div>
+        <div class="grid" id="grid"></div>
+      </main>
+    </div>
+  </div><!-- /viewGen -->
+
+  <!-- ============ GUIA DE PONTUAÇÃO ============ -->
+  <div id="viewGuide" style="display:none">
+    <div class="guide-wrap" id="guide">
+      <div class="print-head" id="gPrintHead"></div>
+      <div class="guide-head">
+        <span class="eyebrow">📊 Planejamento</span>
+        <h1>Guia de Pontuação</h1>
+        <p>Descubra quantos pontos seus alunos acumulam ao longo do tempo e use isso para definir quanto vale cada prêmio e quando fazer as premiações.</p>
+      </div>
+      <div class="guide-grid">
+        <div class="guide-inputs">
+          <h3>Seu planejamento</h3>
+          <div class="gfld"><label>Aulas por semana</label><input type="number" id="gAulasSem" min="1" step="1" value="1"></div>
+          <div class="gfld"><label>Semanas de aula no período</label><input type="number" id="gSemanas" min="1" step="1" value="20"><small>1 aula/semana ≈ 20 aulas no semestre.</small></div>
+          <div class="gfld"><label>Pontos que o aluno ganha por aula (média)</label><input type="number" id="gPtsAula" min="0" step="0.5" value="2"></div>
+          <div class="gfld"><label>Eventos de premiação no período</label><input type="number" id="gEventos" min="1" step="1" value="2"><small>Ex.: 2 = uma premiação por bimestre no semestre.</small></div>
+        </div>
+        <div class="guide-results">
+          <div class="gcards" id="gCards"></div>
+          <div class="gchart-wrap"><canvas id="gChart" height="150"></canvas></div>
+          <div class="gtiers" id="gTiers"></div>
+        </div>
+      </div>
+      <div class="guide-actions"><button class="btn-gen" id="gPdf" style="max-width:280px;margin:0 auto;">📄 Salvar guia em PDF</button></div>
+      <div class="print-foot">Gerado com a ferramenta de Recompensas Br.ino · robótica educacional</div>
+    </div>
+  </div>
+
+  <!-- ============ PEDIDOS RECEBIDOS ============ -->
+  <div id="viewOrders" style="display:none">
+    <div class="guide-wrap">
+      <div class="guide-head">
+        <span class="eyebrow">📥 Acompanhamento</span>
+        <h1>Pedidos de Recompensas</h1>
+        <p>Veja e controle os prêmios escolhidos pelos seus alunos para o catálogo ativo. Os dados são salvos localmente no servidor.</p>
+      </div>
+      
+      <div style="background:#fff; border:1px solid var(--line); border-radius:16px; padding:20px; box-shadow:var(--shadow); max-width:800px; margin:0 auto;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+          <h3 style="margin:0;">Lista de Escolhas</h3>
+          <div style="display:flex; gap:8px;">
+            <button class="add-btn" id="btnRefreshOrders" style="border-color:var(--green); background:var(--green-l); color:var(--green-d);">🔄 Atualizar</button>
+            <button class="add-btn" id="btnClearOrders" style="border-color:#c0392b; background:#fdf2f1; color:#c0392b;">🗑️ Limpar Todos</button>
+          </div>
+        </div>
+        
+        <div style="overflow-x:auto;">
+          <table style="width:100%; border-collapse:collapse; text-align:left; font-size:14px;" id="tableOrders">
+            <thead>
+              <tr style="border-bottom:2px solid var(--line); color:var(--muted); font-weight:700;">
+                <th style="padding:10px 8px;">Aluno</th>
+                <th style="padding:10px 8px;">Recompensa</th>
+                <th style="padding:10px 8px;">Habilidade / Detalhe</th>
+                <th style="padding:10px 8px;">Data / Hora</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyOrders">
+              <!-- Dynamic rows -->
+            </tbody>
+          </table>
+          <div id="emptyOrders" style="text-align:center; color:var(--muted); padding:30px 10px;">Nenhum pedido recebido ainda para o catálogo ativo.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD PRIZE MODAL -->
+  <div class="amodal" id="amodal">
+    <div class="box">
+      <div class="box-h"><h3>Adicionar prêmio</h3><button id="amClose">✕</button></div>
+      <div class="box-b">
+        <p class="err" id="amErr">Preencha o nome e marque ao menos um público-alvo.</p>
+        <div class="fld"><label>Nome do prêmio</label><input id="amName" placeholder="Ex.: Vaso geométrico 3D"></div>
+        <div class="fld"><label>Descrição curta</label><textarea id="amDesc" rows="2" placeholder="Uma frase sobre o prêmio"></textarea></div>
+        <div class="row2">
+          <div class="fld" style="flex:1"><label>Pontos</label><input id="amPts" type="number" min="0" value="30"></div>
+          <div class="fld" style="flex:1"><label>Emoji (opcional)</label><input id="amEmo" maxlength="2" placeholder="🎁"></div>
+        </div>
+        <div class="fld"><label>Público-alvo (pode marcar vários)</label>
+          <div class="segchecks" id="amSegs">
+            <label><input type="checkbox" value="EI">EI</label>
+            <label><input type="checkbox" value="EFAI">EFAI</label>
+            <label><input type="checkbox" value="EFAF">EFAF</label>
+            <label><input type="checkbox" value="HS">HS</label>
+          </div>
+        </div>
+        <div class="fld"><label>Quantidade de alunos</label>
+          <select id="amQty">
+            <option value="ind">🧍 Individual</option>
+            <option value="dupla">🧑‍🤝‍🧑 Dupla</option>
+            <option value="grupo">👨‍👩‍👧 Grupo</option>
+            <option value="sala">🏫 Sala inteira</option>
+          </select>
+        </div>
+        <div class="fld"><label>📷 Foto (opcional)</label><input type="file" id="amPhoto" accept="image/*"></div>
+        <div class="fld"><label>🔗 Link do projeto (opcional)</label><input id="amLink" placeholder="https://… (Thingiverse, Drive, YouTube)"></div>
+        <div class="fld">
+          <label>📎 Arquivo para download (opcional)</label>
+          <input type="file" id="amFile">
+          <small class="hint">Ex.: o arquivo .STL para impressão 3D, ou um PDF do projeto. Fica salvo no servidor.</small>
+        </div>
+        <div class="actions"><button id="amCancel">Cancelar</button><button class="save" id="amSave">Adicionar</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HELP MODAL -->
+  <div class="hmodal" id="hmodal">
+    <div class="box">
+      <div class="box-h"><h3 id="hmTitle"></h3><button id="hmClose">✕</button></div>
+      <div class="box-b" id="hmBody"></div>
+    </div>
+  </div>
+
+  <!-- OUTPUT OVERLAY -->
+  <div class="overlay" id="overlay">
+    <div class="out-bar">
+      <span class="t" id="outTitle">Prévia do catálogo</span>
+      <button class="prim" id="btnCopyLink">🔗 Copiar Link</button>
+      <button class="prim" id="btnExport">⬇️ Baixar site (HTML)</button>
+      <button id="btnOther">📄 Salvar como PDF</button>
+      <button class="close" id="btnClose">✕</button>
+    </div>
+    <div style="background:#e8f4ec; padding:8px 16px; border-bottom:1px solid var(--line); font-size:13px; font-weight:600; color:var(--green-d); text-align:center;">
+      Link do catálogo: <a id="liveLink" href="#" target="_blank" style="color:var(--green-d); text-decoration:underline;">http://localhost:3000/...</a>
+    </div>
+    <div class="frame-wrap"><iframe id="preview" title="Prévia"></iframe></div>
+  </div>
+
+  <script type="module" src="/js/generator.js"></script>
+</body>
+</html>

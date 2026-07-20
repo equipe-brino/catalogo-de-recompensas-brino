@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Injected SEO Metadata -->
+  <title><%= title %> · Catálogo de Recompensas</title>
+  <meta name="description" content="Catálogo de recompensas de <%= teacher %> no <%= school %> para a turma <%= klass %>.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@500;700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <div class="hero">
+    <img id="catalogLogo" alt="Br.ino">
+    <h1 id="catalogTitle"><%= title %></h1>
+    <p id="catalogSubtitle"></p>
+    <div class="meta" id="catalogMeta"><%= teacher %> · <%= klass %> · <%= school %></div>
+  </div>
+
+  <div class="wrap">
+    <h2 style="text-align:center; font-size:20px; margin:0 0 20px;" id="modeTitle"></h2>
+    <div id="catalogContent"></div>
+  </div>
+
+  <div class="foot">Feito com 💚 pela Br.ino · Recompensas integradas ao ClassDojo</div>
+
+  <!-- ORDER MODAL -->
+  <div id="ordModal" class="ord-modal">
+    <div class="ord-box">
+      <button class="ord-x" id="ordX">✕</button>
+      <div class="ord-emoji" id="ordEmoji">🎁</div>
+      <p class="ord-lead" id="ordLead">Você escolheu</p>
+      <div class="ord-prize" id="ordPrize"></div>
+      <div class="ord-skill" id="ordSkill" style="display:none"></div>
+      
+      <label class="ord-lbl">Seu nome no ClassDojo</label>
+      <input id="ordName" placeholder="Digite seu nome" autocomplete="off">
+      <button class="ord-send" id="ordSend">Enviar escolha</button>
+      <div class="ord-done" id="ordDone">✅ Enviado! Agora fale com seu professor(a).</div>
+    </div>
+  </div>
+
+  <iframe name="ordsink" style="display:none" title="envio"></iframe>
+
+  <!-- Injected Catalog Configuration -->
+  <script>
+    window.CATALOG_CONFIG = <%- JSON.stringify(config) %>;
+  </script>
+  
+  <script type="module" src="/js/catalog.js"></script>
+</body>
+</html>
