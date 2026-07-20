@@ -797,10 +797,23 @@ function download() {
     URL.revokeObjectURL(a.href);
 }
 function printPdf() {
-    if (preview && preview.contentWindow) {
-        preview.contentWindow.focus();
-        preview.contentWindow.print();
+    if (!preview || !preview.contentWindow || !preview.contentDocument)
+        return;
+    if (typeof window.html2pdf === "function") {
+        window.html2pdf()
+            .set({
+            margin: [0.2, 0.2, 0.2, 0.2],
+            filename: "Premiações.pdf",
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: "in", format: "a4", orientation: "portrait" }
+        })
+            .from(preview.contentDocument.body)
+            .save();
+        return;
     }
+    preview.contentWindow.focus();
+    preview.contentWindow.print();
 }
 if (btnExport) {
     btnExport.onclick = () => {

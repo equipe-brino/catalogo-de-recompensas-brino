@@ -11,13 +11,28 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-const DATA_DIR = path.join(__dirname, '..', 'data');
+const TMP_DIR = process.env.TMPDIR || '/tmp';
+const DATA_DIR = path.join(TMP_DIR, 'brino-data');
+const UPLOAD_DIR = path.join(TMP_DIR, 'brino-uploads');
 const CATALOGS_FILE = path.join(DATA_DIR, 'catalogos.json');
 const ORDERS_FILE = path.join(DATA_DIR, 'pedidos.json');
 
-if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-if (!fs.existsSync(CATALOGS_FILE)) fs.writeFileSync(CATALOGS_FILE, JSON.stringify({}, null, 2));
-if (!fs.existsSync(ORDERS_FILE)) fs.writeFileSync(ORDERS_FILE, JSON.stringify({}, null, 2));
+for (const dir of [DATA_DIR, UPLOAD_DIR]) {
+  try {
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  } catch (err) {
+    console.error('Unable to create runtime directory:', dir, err);
+  }
+}
+
+try {
+  if (!fs.existsSync(CATALOGS_FILE)) fs.writeFileSync(CATALOGS_FILE, JSON.stringify({}, null, 2));
+  if (!fs.existsSync(ORDERS_FILE)) fs.writeFileSync(ORDERS_FILE, JSON.stringify({}, null, 2));
+} catch (err) {
+  console.error('Unable to initialize runtime data files:', err);
+}
+
+app.use('/uploads', express.static(UPLOAD_DIR));
 
 function slugify(text) {
   return text
@@ -49,7 +64,7 @@ function saveBase64File(dataUrl, prefix) {
     else if (mimeType.includes('octet-stream')) ext = 'stl';
 
     const filename = `${prefix}-${crypto.randomBytes(8).toString('hex')}.${ext}`;
-    const filePath = path.join(__dirname, '..', 'public', 'uploads', filename);
+    const filePath = path.join(UPLOAD_DIR, filename);
     fs.mkdirSync(path.dirname(filePath), { recursive: true });
     fs.writeFileSync(filePath, buffer);
     return `/uploads/${filename}`;
@@ -67,6 +82,39 @@ function escapeHtml(s) {
     '"': '&quot;',
     "'": '&#39;'
   }[c]));
+}
+
+function renderCatalogPage(config) {
+  const templatePath = path.join(__dirname, '..', 'views', 'catalogo.html');
+  if (!fs.existsSync(templatePath)) {
+    throw new Error('Template de catálogo ausente no servidor.');
+  }
+
+  let html = fs.readFileSync(templatePath, 'utf8');
+  const modeSubtitle = {
+    loja: 'Junte seus pontos e escolha o prêmio que mais combina com você!',
+    podio: 'Parabéns aos destaques da turma! 🎉',
+    trilha: 'Desenvolva cada habilidade e desbloqueie um prêmio.'
+  }[config.mode] || 'Recompensas para a sua turma';
+
+  const modeTitle = {
+    loja: 'Escolha seu prêmio',
+    podio: 'Premiação da turma',
+    trilha: 'Sua trilha de conquistas'
+  }[config.mode] || 'Catálogo';
+
+  const configJson = JSON.stringify(config)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e');
+
+  return html
+    .replace(/\{\{title\}\}/g, escapeHtml(config.title || 'Catálogo de Recompensas'))
+    .replace(/\{\{subtitle\}\}/g, escapeHtml(modeSubtitle))
+    .replace(/\{\{teacher\}\}/g, escapeHtml(config.teacher || ''))
+    .replace(/\{\{klass\}\}/g, escapeHtml(config.klass || ''))
+    .replace(/\{\{school\}\}/g, escapeHtml(config.school || ''))
+    .replace(/\{\{modeTitle\}\}/g, escapeHtml(modeTitle))
+    .replace(/\{\{configJson\}\}/g, configJson);
 }
 
 app.get('/', (req, res) => {
@@ -129,7 +177,7 @@ app.post('/api/catalogo', (req, res) => {
   }
 });
 
-app.get('/catalogo/:customer', (req, res) => {
+app.get(['/catalogo/:customer', '/catalogo/:customer/'], (req, res) => {
   try {
     const slug = slugify(req.params.customer);
     const catalogs = JSON.parse(fs.readFileSync(CATALOGS_FILE, 'utf8'));
@@ -139,19 +187,7 @@ app.get('/catalogo/:customer', (req, res) => {
       return res.status(404).send('<h1>Catálogo não encontrado</h1><p>Verifique o link ou crie um novo catálogo.</p>');
     }
 
-    const templatePath = path.join(__dirname, '..', 'views', 'Catalogo-base.html');
-    if (!fs.existsSync(templatePath)) {
-      return res.status(500).send('Template de catálogo ausente no servidor.');
-    }
-
-    let html = fs.readFileSync(templatePath, 'utf8');
-    const rendered = html
-      .replace(/<%= title %>/g, escapeHtml(config.title || 'Catálogo de Recompensas'))
-      .replace(/<%= teacher %>/g, escapeHtml(config.teacher))
-      .replace(/<%= school %>/g, escapeHtml(config.school))
-      .replace(/<%= klass %>/g, escapeHtml(config.klass))
-      .replace(/<%- JSON.stringify\(config\) %>/g, JSON.stringify(config));
-
+    const rendered = renderCatalogPage(config);
     res.send(rendered);
   } catch (err) {
     console.error('Error rendering catalog:', err);

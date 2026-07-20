@@ -101,7 +101,38 @@ function escapeHtml(s) {
     '"': '&quot;'
   }[c]));
 }
+function renderCatalogPage(config) {
+  const templatePath = path.join(__dirname, 'views', 'catalogo.html');
+  if (!fs.existsSync(templatePath)) {
+    throw new Error('Template de catálogo ausente no servidor.');
+  }
 
+  let html = fs.readFileSync(templatePath, 'utf8');
+  const modeSubtitle = {
+    loja: 'Junte seus pontos e escolha o prêmio que mais combina com você!',
+    podio: 'Parabéns aos destaques da turma! 🎉',
+    trilha: 'Desenvolva cada habilidade e desbloqueie um prêmio.'
+  }[config.mode] || 'Recompensas para a sua turma';
+
+  const modeTitle = {
+    loja: 'Escolha seu prêmio',
+    podio: 'Premiação da turma',
+    trilha: 'Sua trilha de conquistas'
+  }[config.mode] || 'Catálogo';
+
+  const configJson = JSON.stringify(config)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e');
+
+  return html
+    .replace(/\{\{title\}\}/g, escapeHtml(config.title || 'Catálogo de Recompensas'))
+    .replace(/\{\{subtitle\}\}/g, escapeHtml(modeSubtitle))
+    .replace(/\{\{teacher\}\}/g, escapeHtml(config.teacher || ''))
+    .replace(/\{\{klass\}\}/g, escapeHtml(config.klass || ''))
+    .replace(/\{\{school\}\}/g, escapeHtml(config.school || ''))
+    .replace(/\{\{modeTitle\}\}/g, escapeHtml(modeTitle))
+    .replace(/\{\{configJson\}\}/g, configJson);
+}
 /* ========================================================
    ROUTE HANDLERS
    ======================================================== */
@@ -185,8 +216,8 @@ app.post('/api/catalogo', (req, res) => {
   }
 });
 
-// GET /catalogo/:customer/ -> Serves dynamic catalog page
-app.get('/catalogo/:customer', (req, res) => {
+// GET /catalogo/:customer[/] -> Serves dynamic catalog page
+app.get(['/catalogo/:customer', '/catalogo/:customer/'], (req, res) => {
   try {
     const slug = slugify(req.params.customer);
     const catalogs = JSON.parse(fs.readFileSync(CATALOGS_FILE, 'utf8'));
@@ -196,21 +227,7 @@ app.get('/catalogo/:customer', (req, res) => {
       return res.status(404).send('<h1>Catálogo não encontrado</h1><p>Verifique o link ou crie um novo catálogo.</p>');
     }
 
-    const templatePath = path.join(__dirname, 'views', 'Catalogo-base.html');
-    if (!fs.existsSync(templatePath)) {
-      return res.status(500).send('Template de catálogo ausente no servidor.');
-    }
-
-    let html = fs.readFileSync(templatePath, 'utf8');
-
-    // Dynamically replace template engine variables
-    const rendered = html
-      .replace(/<%= title %>/g, escapeHtml(config.title || 'Catálogo de Recompensas'))
-      .replace(/<%= teacher %>/g, escapeHtml(config.teacher))
-      .replace(/<%= school %>/g, escapeHtml(config.school))
-      .replace(/<%= klass %>/g, escapeHtml(config.klass))
-      .replace(/<%- JSON.stringify\(config\) %>/g, JSON.stringify(config));
-
+    const rendered = renderCatalogPage(config);
     res.send(rendered);
   } catch (err) {
     console.error('Error rendering catalog:', err);
