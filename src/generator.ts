@@ -48,7 +48,7 @@ const LOGO = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTk1IiBoZWlnaHQ9IjY5IiB2
 
 // Set brand logo
 const brandLogoEl = document.getElementById("brandLogo") as HTMLImageElement;
-if (brandLogoEl) brandLogoEl.src = LOGO;
+if (brandLogoEl) brandLogoEl.src = "/logo.svg";
 
 // Default prizes library
 const LIB: Prize[] = [

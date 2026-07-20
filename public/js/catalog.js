@@ -1,6 +1,43 @@
 (function () {
   const config = window.CATALOG_CONFIG || {};
 
+  const FORM_ENDPOINT = 'https://docs.google.com/forms/d/e/1FAIpQLSces3NPE5o9GJQKW2sKE9J-QUmDMJ0k1T-a2ZFx7afhvfvTSg/formResponse';
+  const FORM_MAP = {
+    professor: 'entry.548978964',
+    turma: 'entry.310748241',
+    escola: 'entry.388635861',
+    premio: 'entry.1112703587',
+    nome: 'entry.861830186'
+  };
+
+  function enviarParaGoogleForms({ professor, turma, escola, premio, nome }) {
+    const dados = {
+      [FORM_MAP.professor]: professor ?? '',
+      [FORM_MAP.turma]: turma ?? '',
+      [FORM_MAP.escola]: escola ?? '',
+      [FORM_MAP.premio]: premio ?? '',
+      [FORM_MAP.nome]: nome ?? ''
+    };
+
+    const formulario = document.createElement('form');
+    formulario.action = FORM_ENDPOINT;
+    formulario.method = 'POST';
+    formulario.target = 'googleFormsReceiver';
+    formulario.style.display = 'none';
+
+    Object.entries(dados).forEach(([campo, valor]) => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = campo;
+      input.value = valor;
+      formulario.appendChild(input);
+    });
+
+    document.body.appendChild(formulario);
+    formulario.submit();
+    formulario.remove();
+  }
+
   const catalogLogo = document.getElementById('catalogLogo');
   const catalogTitle = document.getElementById('catalogTitle');
   const catalogSubtitle = document.getElementById('catalogSubtitle');
@@ -150,7 +187,7 @@
     }
     if (catalogLogo) {
       catalogLogo.alt = 'Br.ino';
-      catalogLogo.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="40" viewBox="0 0 120 40"><rect width="120" height="40" rx="8" fill="#38B54F"/><text x="60" y="24" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="white">Br.ino</text></svg>';
+      catalogLogo.src = '/logo.svg';
     }
 
     if (catalogContent) {
@@ -204,6 +241,14 @@
     ordSend.style.display = 'none';
     ordDone.textContent = '✅ Enviado! Agora fale com seu professor(a).';
     ordDone.style.display = 'block';
+
+    enviarParaGoogleForms({
+      professor: config.teacher || '',
+      turma: config.klass || '',
+      escola: config.school || '',
+      premio: prizeName,
+      nome: name
+    });
 
     try {
       await fetch('/api/orders', {

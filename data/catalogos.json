@@ -134,5 +134,44 @@
     "items": [],
     "slug": "prof-teste-escola-demo",
     "updatedAt": "2026-07-20T18:17:05.750Z"
+  },
+  "teste-1": {
+    "mode": "loja",
+    "fmt": "site",
+    "showPts": true,
+    "title": "Recompensas teste",
+    "teacher": "Teste",
+    "klass": "8° ano EFAF",
+    "school": "Teste",
+    "slug": "teste-1",
+    "items": [
+      {
+        "id": "ei1",
+        "seg": "EI",
+        "emo": "🧩",
+        "name": "Quebra-cabeça de encaixe",
+        "desc": "Peças grandes de encaixar, fáceis de manusear.",
+        "pts": 20
+      },
+      {
+        "id": "ei2",
+        "seg": "EI",
+        "emo": "🐞",
+        "name": "Animais de montar",
+        "desc": "Bichinhos 3D que se montam por encaixe.",
+        "pts": 25
+      },
+      {
+        "id": "ei3",
+        "seg": "EI",
+        "emo": "🏅",
+        "name": "Medalha de campeão",
+        "desc": "Medalha impressa em 3D com fita.",
+        "pts": 30
+      }
+    ],
+    "skills": {},
+    "objetivo": "",
+    "updatedAt": "2026-07-20T18:47:29.284Z"
   }
 }
