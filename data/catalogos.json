@@ -173,5 +173,99 @@
     "skills": {},
     "objetivo": "",
     "updatedAt": "2026-07-20T18:47:29.284Z"
+  },
+  "porta": {
+    "mode": "loja",
+    "fmt": "site",
+    "showPts": true,
+    "title": "Catalogo de vidas",
+    "teacher": "sérgio",
+    "klass": "7° ano feaf",
+    "school": "Leonardo Davinci",
+    "slug": "porta",
+    "items": [
+      {
+        "id": "ei1",
+        "seg": "EI",
+        "emo": "🧩",
+        "name": "Quebra-cabeça de encaixe",
+        "desc": "Peças grandes de encaixar, fáceis de manusear.",
+        "pts": 20
+      },
+      {
+        "id": "ei2",
+        "seg": "EI",
+        "emo": "🐞",
+        "name": "Animais de montar",
+        "desc": "Bichinhos 3D que se montam por encaixe.",
+        "pts": 25
+      },
+      {
+        "id": "ei5",
+        "seg": "EI",
+        "emo": "⭐",
+        "name": "Carimbo de estrelinha",
+        "desc": "Carimbo 3D para as atividades.",
+        "pts": 15
+      }
+    ],
+    "skills": {},
+    "objetivo": "",
+    "updatedAt": "2026-07-20T18:56:05.988Z"
+  },
+  "sergio1": {
+    "mode": "loja",
+    "fmt": "site",
+    "showPts": true,
+    "title": "catalogo para alunos do efaf",
+    "teacher": "Sérgio",
+    "klass": "8° ano efaf",
+    "school": "Marista",
+    "slug": "sergio1",
+    "items": [
+      {
+        "id": "ei1",
+        "seg": "EI",
+        "emo": "🧩",
+        "name": "Quebra-cabeça de encaixe",
+        "desc": "Peças grandes de encaixar, fáceis de manusear.",
+        "pts": 20
+      },
+      {
+        "id": "ei2",
+        "seg": "EI",
+        "emo": "🐞",
+        "name": "Animais de montar",
+        "desc": "Bichinhos 3D que se montam por encaixe.",
+        "pts": 25
+      },
+      {
+        "id": "ei3",
+        "seg": "EI",
+        "emo": "🏅",
+        "name": "Medalha de campeão",
+        "desc": "Medalha impressa em 3D com fita.",
+        "pts": 30
+      },
+      {
+        "id": "ei5",
+        "seg": "EI",
+        "emo": "⭐",
+        "name": "Carimbo de estrelinha",
+        "desc": "Carimbo 3D para as atividades.",
+        "pts": 15
+      },
+      {
+        "id": "ei6",
+        "seg": "EI",
+        "emo": "🦕",
+        "name": "Dinossauro articulado",
+        "desc": "Dino que mexe o rabo e a cabeça.",
+        "pts": 40
+      }
+    ],
+    "skills": {},
+    "objetivo": "",
+    "updatedAt": "2026-07-20T19:07:33.792Z"
   }
 }
